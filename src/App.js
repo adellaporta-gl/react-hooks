@@ -2,6 +2,7 @@ import ReactDOM from "react-dom";
 import { useEffect, useReducer, useRef, useState } from "react";
 import "./App.css";
 import { FaStar } from "react-icons/fa";
+import { useInput } from "./useInput";
 
 // example using props
 function LastNameComponent(props) {
@@ -147,9 +148,9 @@ function ControlledForm() {
   const changeSound = (syntheticEvent) => {
     setSound(syntheticEvent.target.value);
   }
-  const changeColor = (syntheticEvent) => {
-    setColor(syntheticEvent.target.value);
-  }
+  // const changeColor = (syntheticEvent) => {
+  //   setColor(syntheticEvent.target.value);
+  // }
   const submitForm = (syntheticEvent) => {
     syntheticEvent.preventDefault();
     alert(`Sound ${sound} - Color ${color}`);
@@ -160,12 +161,34 @@ function ControlledForm() {
     <div>
       <form onSubmit={submitForm}>
         <input type="text" value={sound} onChange={changeSound} />
-        <input type="color" value={color} onChange={changeColor} />
+        <input type="color" value={color} onChange={(syntheticEvent) => setColor(syntheticEvent.target.value)} />
         <button type="submit">Submit</button>
       </form>
     </div>
   );
 }
+
+// reusing logic from custom hook
+function FormWithCustomHook() {
+  const [soundInputProps, resetSoundInput] = useInput("");
+  const [colorInputProps, resetColorInput] = useInput("#000000");
+  const handleSubmit = (syntheticEvent) => {
+    syntheticEvent.preventDefault();
+    alert(`Sound is ${soundInputProps.value} and Color is ${colorInputProps.value}`);
+    resetSoundInput();
+    resetColorInput();
+  }
+  return (
+    <div>
+      <form onSubmit={handleSubmit}>
+        <input type="text" {...soundInputProps} />
+        <input type="color" {...colorInputProps} />
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+  );
+}
+
 export default function App() {
   const [useStateConcept] = useState("This is the value of the initial 'useStateConcept' variable using 'useState'");
   return (
@@ -201,8 +224,11 @@ export default function App() {
       <UncontrolledForm />
       <h3>Controlled form component</h3>
       <ControlledForm />
+      <hr />
+      <h1>Reusing logic with custom hook</h1>
+      <FormWithCustomHook />
     </div>
   );
 }
 
-ReactDOM.render(<App />, document.getElementById("root"));
+// ReactDOM.render(<App />, document.getElementById("root"));
