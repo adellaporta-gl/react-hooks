@@ -1,5 +1,5 @@
 import ReactDOM from "react-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import "./App.css";
 import { FaStar } from "react-icons/fa";
 
@@ -50,13 +50,25 @@ function UserAdminComponent() {
 }
 // useEffect to fetch data
 function GithubUsers() {
+  const [errorMessage, setErrorMessage] = useState("");
   const [data, setData] = useState([]); // as we don't want an initial value we passed in an empty array 
   useEffect(() => {
     fetch('https://api.github.com/users')
       .then(response => response.json())
-      .then(jsonResponse => setData(jsonResponse))
+      .then(jsonResponse => {
+        console.log("jsonResponse:", jsonResponse);
+        if (jsonResponse.message) {
+          setErrorMessage(jsonResponse.message);
+          console.log("errorMessage: ", errorMessage)
+        } else {
+          setData(jsonResponse);
+        }
+      }).catch((reason) => {
+        console.log("reason");
+        console.log(reason.message);
+      });
   }, []);
-  if(data) {
+  if (data.length > 0) {
     return (
       <div>
         <ul>
@@ -65,8 +77,36 @@ function GithubUsers() {
       </div>
     );
   }
-  return <div>No users!</div>;
+  return (
+    <div style={{ fontSize: "2em", color: "red", fontWeight: "bold" }}>      
+      No users to display!
+      <br />
+      {errorMessage}
+    </div>
+
+  );
 }
+
+// useReducer
+function ClickToAddNumber() {
+  const [number, setNumber] = useReducer((prevNumber, newNumber) => {
+    console.log("prevNumber: ", prevNumber);
+    console.log("newNumber: ", newNumber);
+    return prevNumber + newNumber;
+  }, 0);
+  const numberStyle = {
+    fontSize: "2em",
+    padding: "2em",
+    border: "2px solid black"
+  };
+  return (
+    <div>
+      <p style={numberStyle} onClick={() => setNumber(10)}>{number}</p>
+    </div>
+  );
+}
+
+
 export default function App() {
   const [useStateConcept] = useState("This is the value of the initial 'useStateConcept' variable using 'useState'");
   return (
@@ -94,6 +134,8 @@ export default function App() {
       <h3>Importance of the dependency array argument</h3>
       <p>If we don't pass in a dependency array, useEffect will be called infinite times, thus we have passed in an empty array</p>
       <GithubUsers />
+      <h1>Using useReducer</h1>
+      <ClickToAddNumber />
     </div>
   );
 }
