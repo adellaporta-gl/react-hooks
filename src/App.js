@@ -1,5 +1,5 @@
 import ReactDOM from "react-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import { FaStar } from "react-icons/fa";
 
@@ -15,7 +15,12 @@ function FirstNameComponent({ cValue }) {
     <span className="firstName">{cValue}</span>
   );
 }
-// Rating with stars
+// useState: Start Rating
+function StarRating() {
+  const [selectedStars, setSelectedStars] = useState(0);
+  const createArray = (length) => { return [...Array(length)] };
+  return createArray(5).map((n, i) => { return <Star key={i} selected={selectedStars > i} onSelected={() => setSelectedStars(i + 1)} /> });
+}
 function Star({ selected, onSelected }) {
   return (
     <FaStar
@@ -24,20 +29,71 @@ function Star({ selected, onSelected }) {
     ></FaStar>
   );
 }
-function StarRating() {
-  const [selectedStars, setSelectedStars] = useState(0);
-  const createArray = (length) => { return [...Array(length)] };
-  return createArray(5).map((n, i) => { return <Star key={i} selected={selectedStars > i} onSelected={() => setSelectedStars(i + 1)} /> });
-}
 
-export default function App() {
-  const [useStateConcept] = useState("This is the value of the initial 'name' variable using 'useState'");
+// useEffect
+function UserAdminComponent() {
+  const [name, setName] = useState("Andrés");
+  const [admin, setAdmin] = useState(false);
+  useEffect(() => { document.title = "useEffect => name" }, [name]);
+  useEffect(() => { document.title = "useEffect => admin" }, [admin]);
   return (
     <div>
+      <p style={{ backgroundColor: "red", color: "black", padding: "2em" }}>
+        Click the below buttons and check the document title to see how useEffect is reacting to these state variables changes
+      </p>
+      <p>`Congratulations {name}`</p>
+      <button onClick={() => setName(name === "Maximiliano" ? "Andrés" : "Maximiliano")}>Change name</button>
+      <button onClick={() => setAdmin(!admin)}>Change admin</button>
+      <p>{admin ? "is an admin" : "is not an admin"}</p>
+    </div>
+  );
+}
+// useEffect to fetch data
+function GithubUsers() {
+  const [data, setData] = useState([]); // as we don't want an initial value we passed in an empty array 
+  useEffect(() => {
+    fetch('https://api.github.com/users')
+      .then(response => response.json())
+      .then(jsonResponse => setData(jsonResponse))
+  }, []);
+  if(data) {
+    return (
+      <div>
+        <ul>
+          {data.map(user => <li key={user.id}>{user.id}</li>)}
+        </ul>
+      </div>
+    );
+  }
+  return <div>No users!</div>;
+}
+export default function App() {
+  const [useStateConcept] = useState("This is the value of the initial 'useStateConcept' variable using 'useState'");
+  return (
+    <div>
+      <h1>Using useState</h1>
       <p>Mi name is <FirstNameComponent cValue="Andrés" /> <LastNameComponent cValue="Della Porta" /></p>
-      <h3>useState Concept</h3><hr />
       <p>{useStateConcept}</p>
+      <hr />
       <StarRating />
+      <hr />
+      <h1>Using useEffect</h1>
+      <p>
+        useEffect: allow us to perform side effects, like printing in the console.
+        By default it runs for each render or update.
+        To avoid this behaviour we can pass in a dependency array as a 2nd argument in order to tell React when to call useEffect function
+      </p>
+      <h3>Example:</h3>
+      <code>
+        {'useEffect(() => { firstArg_function}, [dependencyArray] })'}
+      </code>
+      <p>{'this is telling React to run the function "firstArg_function" whenever some of the state variables of the "dependencyArray" is changed'}</p>
+      <hr />
+      <UserAdminComponent />
+      <hr />
+      <h3>Importance of the dependency array argument</h3>
+      <p>If we don't pass in a dependency array, useEffect will be called infinite times, thus we have passed in an empty array</p>
+      <GithubUsers />
     </div>
   );
 }
