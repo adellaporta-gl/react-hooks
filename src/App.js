@@ -1,5 +1,5 @@
 import ReactDOM from "react-dom";
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer, useRef, useState } from "react";
 import "./App.css";
 import { FaStar } from "react-icons/fa";
 
@@ -117,7 +117,55 @@ function ClickToAddNumber() {
   );
 }
 
+// useRef for uncontrolled form componenent
+function UncontrolledForm() {
+  const sound = useRef("");
+  const color = useRef("");
+  const submitForm = (syntheticEvent) => {
+    syntheticEvent.preventDefault();
+    const soundValue = sound.current.value;
+    const colorValue = color.current.value;
+    alert(`Sound: ${soundValue} - Color ${colorValue}`);
+    sound.current.value = "";
+    color.current.value = "#000000";
+  }
+  return (
+    <div>
+      <form onSubmit={submitForm}>
+        <input type="text" ref={sound} />
+        <input type="color" ref={color} />
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+  );
+}
 
+// useState for controlled form componenent
+function ControlledForm() {
+  const [sound, setSound] = useState("");
+  const [color, setColor] = useState("#000000");
+  const changeSound = (syntheticEvent) => {
+    setSound(syntheticEvent.target.value);
+  }
+  const changeColor = (syntheticEvent) => {
+    setColor(syntheticEvent.target.value);
+  }
+  const submitForm = (syntheticEvent) => {
+    syntheticEvent.preventDefault();
+    alert(`Sound ${sound} - Color ${color}`);
+    setSound("");
+    setColor("#000000");
+  }
+  return (
+    <div>
+      <form onSubmit={submitForm}>
+        <input type="text" value={sound} onChange={changeSound} />
+        <input type="color" value={color} onChange={changeColor} />
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+  );
+}
 export default function App() {
   const [useStateConcept] = useState("This is the value of the initial 'useStateConcept' variable using 'useState'");
   return (
@@ -147,6 +195,12 @@ export default function App() {
       <GithubUsers />
       <h1>Using useReducer</h1>
       <ClickToAddNumber />
+      <hr />
+      <h1>Using useRef</h1>
+      <h3>Uncontrolled form component</h3>
+      <UncontrolledForm />
+      <h3>Controlled form component</h3>
+      <ControlledForm />
     </div>
   );
 }
