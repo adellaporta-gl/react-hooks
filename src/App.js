@@ -78,7 +78,7 @@ function GithubUsers() {
     );
   }
   return (
-    <div style={{ fontSize: "2em", color: "red", fontWeight: "bold" }}>      
+    <div style={{ fontSize: "2em", color: "red", fontWeight: "bold" }}>
       No users to display!
       <br />
       {errorMessage}
@@ -88,20 +88,31 @@ function GithubUsers() {
 }
 
 // useReducer
+function reducerFunction(state, action) {
+  return { counter: state.counter + action.newValue }
+}
+function initFunction(initialValue) {
+  return { counter: initialValue }
+}
 function ClickToAddNumber() {
+  const INITIAL_VALUE = 0;
+  const NUMBER_TO_ADD = 22;
   const [number, setNumber] = useReducer((prevNumber, newNumber) => {
     console.log("prevNumber: ", prevNumber);
     console.log("newNumber: ", newNumber);
     return prevNumber + newNumber;
-  }, 0);
+  }, INITIAL_VALUE);
   const numberStyle = {
     fontSize: "2em",
     padding: "2em",
     border: "2px solid black"
   };
+  const [anotherNumber, setAnotherNumber] = useReducer(reducerFunction, { counter: INITIAL_VALUE });
   return (
     <div>
       <p style={numberStyle} onClick={() => setNumber(10)}>{number}</p>
+      <h3>Click the following button to add {NUMBER_TO_ADD}:</h3>
+      <button style={numberStyle} onClick={() => setAnotherNumber({ "newValue": NUMBER_TO_ADD })}>{anotherNumber.counter}</button>
     </div>
   );
 }
