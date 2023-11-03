@@ -1,8 +1,9 @@
 import ReactDOM from "react-dom";
-import { useEffect, useReducer, useRef, useState } from "react";
+import { useContext, useEffect, useReducer, useRef, useState } from "react";
 import "./App.css";
 import { FaStar } from "react-icons/fa";
 import { useInput } from "./useInput";
+import { CarContext, useCountries } from ".";
 
 // example using props
 function LastNameComponent(props) {
@@ -189,6 +190,32 @@ function FormWithCustomHook() {
   );
 }
 
+// placing data in context
+function PlacingCarCompaniesFromContext() {
+  const carCompaniesArray = useContext(CarContext);
+  return (
+    <div>
+      <ul>
+        {carCompaniesArray.map(
+          (carCompany) => <li key={carCompany.id}>{carCompany.id} - {carCompany.name} ({carCompany.country})</li>
+        )}
+      </ul>
+    </div>
+  );
+}
+
+// using custom context hook
+function CountriesCustomHook() {
+  const contextProvidedCountries = useCountries();
+  return (
+    <div>
+      <ul>
+        {contextProvidedCountries.map((country) => <li key={country.id}>{country.name} use {country.currency} as currency</li>)}
+      </ul>
+    </div>
+  );
+}
+
 export default function App() {
   const [useStateConcept] = useState("This is the value of the initial 'useStateConcept' variable using 'useState'");
   return (
@@ -227,8 +254,12 @@ export default function App() {
       <hr />
       <h1>Reusing logic with custom hook</h1>
       <FormWithCustomHook />
+      <hr />
+      <h1>Context data: place and retrieve car companies</h1>
+      <PlacingCarCompaniesFromContext />
+      <hr />
+      <h1>Custom hook for context</h1>
+      <CountriesCustomHook />
     </div>
   );
 }
-
-// ReactDOM.render(<App />, document.getElementById("root"));
